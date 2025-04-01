@@ -31,7 +31,8 @@ const DetailTableDashboard = ({
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [isTourOpen, setIsTourOpen] = useState(false);
   const [isBlocking, setIsBlocking] = useState(false);
-
+  const [existingCourse, setExistingCourse] = useState([]);
+  const[error,setError]=useState('');
   useEffect(() => {
     Fetchdata();
     const hasVisited = localStorage.getItem("hasVisited");
@@ -76,7 +77,7 @@ const DetailTableDashboard = ({
       );
       const response = await temp.json();
       setCoins(response?.data);
-      console.log(response);
+      // console.log(response);
     }
   }
   useEffect(() => {
@@ -87,10 +88,7 @@ const DetailTableDashboard = ({
     setshowspinner(true);
     const file = event.target.files[0];
     const formData = new FormData();
-    const payload = {
-      file: file,
-      selectedCourses: selectedCourses,
-    };
+    
     // Validate file type
     if (
       file &&
@@ -111,17 +109,21 @@ const DetailTableDashboard = ({
         const response = await fetchdata.json();
         setshowspinner(false);
         if (response.success) {
-          toast.success(response.msg);
+          toast.success("students uplaoded successfully");
+          closeUploadModal();
+          // window.location.reload();
 
           FetchData();
           Fetchdata();
           fetchFiltersData();
         } else if (!response?.success && response?.validationError) {
           openModal();
-          setduplicateEmails(response?.duplicateEmails);
-          setduplicatePhones(response?.duplicatePhones);
-          setemailerros(response?.emailErrors);
-          setphoneErrors(response?.phoneErrors);
+          setduplicateEmails(response?.duplicateEmails || []);
+          setduplicatePhones(response?.duplicatePhones || []);
+          setemailerros(response?.emailErrors || []);
+          setphoneErrors(response?.phoneErrors || []);
+          setExistingCourse(response?.existingCourse || []);  // Changed to match API response
+          setError(response?.msg || '');
         } else {
           toast.error(response.msg);
         }
@@ -133,6 +135,8 @@ const DetailTableDashboard = ({
       alert("Please select a csv file type.");
     }
   };
+  // console.log('existing',typeof existingCourses);
+  
 
   const handleDownload = () => {
     let fileurl = "/upload-dummy - Sheet1.csv";
@@ -257,6 +261,8 @@ const DetailTableDashboard = ({
       <MyModal
         duplicateEmails={duplicateEmails}
         duplicatePhones={duplicatePhones}
+        existingCourses={existingCourse}
+        error={error}
         emailerros={emailerros}
         phoneErrors={phoneErrors}
         isModalOpen={isModalOpen}

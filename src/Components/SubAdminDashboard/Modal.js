@@ -3,7 +3,9 @@ import Modal from 'react-modal';
 import { MdClose } from "react-icons/md";
 Modal.setAppElement('#root');
 
-const MyModal = ({ isModalOpen, closeModal,duplicateEmails,duplicatePhones,emailerros,phoneErrors }) => {
+const MyModal = ({ isModalOpen, error, closeModal,duplicateEmails,duplicatePhones,emailerros,phoneErrors,existingCourses }) => {
+  console.log("existing",existingCourses);
+  
   return (
     <Modal
       isOpen={isModalOpen}
@@ -13,7 +15,7 @@ const MyModal = ({ isModalOpen, closeModal,duplicateEmails,duplicatePhones,email
       overlayClassName="fixed inset-0 bg-black bg-opacity-50"
     >
       <div className="bg-white rounded-lg p-6 w-full max-w-3xl mx-auto">
-        <div className='flex justify-between'><h2 className="text-2xl font-semibold mb-4">Validation errors</h2>
+        <div className='flex justify-between'><h2 className="text-base font-semibold mb-4">{error}</h2>
         <button
           onClick={closeModal}
           className="mb-4 text-red-500 text-xl px-4 py-2 rounded  transition"
@@ -30,6 +32,14 @@ const MyModal = ({ isModalOpen, closeModal,duplicateEmails,duplicatePhones,email
               </tr>
             </thead>
             <tbody>
+            {existingCourses?.map((item)=>{
+                return(<>
+                   <tr>
+                <td className="px-4 py-2 border">{item?.email}</td>
+                <td className="px-4 py-2 border">{item?.error}</td>
+              </tr>
+                </>)
+            })}
             {duplicateEmails?.map((item)=>{
                 return(<>
                    <tr>
